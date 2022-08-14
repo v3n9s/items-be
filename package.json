@@ -1,6 +1,9 @@
 {
   "name": "items-be",
-  "scripts": {},
+  "scripts": {
+    "dev": "webpack --env ISDEV",
+    "build": "webpack"
+  },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.13",
