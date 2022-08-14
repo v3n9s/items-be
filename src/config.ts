@@ -1,7 +1,8 @@
 import 'dotenv/config';
 
 const variables = {
-  DATABASE_URL: process.env.DATABASE_URL!
+  DATABASE_URL: process.env.DATABASE_URL!,
+  PORT: process.env.PORT!
 };
 
 const emptyVars = Object.entries(variables).filter(([, v]) => v === undefined).map(([k]) => k);
