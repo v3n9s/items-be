@@ -2,7 +2,8 @@
   "name": "items-be",
   "scripts": {
     "dev": "webpack --env ISDEV",
-    "build": "webpack"
+    "build": "webpack",
+    "typeorm": "typeorm-ts-node-esm -d ./src/data-source"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
