@@ -1,14 +1,26 @@
 import 'dotenv/config';
+import { Joi } from 'express-validation';
 
-const variables = {
-  DATABASE_URL: process.env.DATABASE_URL!,
-  PORT: process.env.PORT!
-};
-
-const emptyVars = Object.entries(variables).filter(([, v]) => v === undefined).map(([k]) => k);
-
-if (emptyVars.length) {
-  throw new Error(`Environment variables [${emptyVars.join(', ')}] are not defined`);
+interface Config {
+  DATABASE_URL: string;
+  PORT: number;
 }
 
-export default variables;
+const schema = Joi.object<Config>({
+  DATABASE_URL: Joi.string(),
+  PORT: Joi.number().integer()
+});
+
+const config = schema.validate({
+  DATABASE_URL: process.env.DATABASE_URL,
+  PORT: process.env.PORT
+}, {
+  abortEarly: false,
+  presence: 'required'
+});
+
+if (config.error) {
+  throw new Error(config.error.details.map(({ message }) => message).join('\n'));
+}
+
+export default config.value;
