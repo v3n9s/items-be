@@ -3,6 +3,7 @@ import { validate, ValidationError } from 'express-validation';
 
 export const customValidate: typeof validate = (schema, options, joiRoot) => {
   return validate(schema, {
+    context: true,
     keyByField: true,
     ...options
   }, {
