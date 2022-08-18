@@ -15,7 +15,7 @@ export const customValidate: typeof validate = (schema, options, joiRoot) => {
 
 export const validationErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
-    res.status(err.statusCode).json(err);
+    res.status(err.statusCode).json(err.details);
   } else {
     next(err);
   }
