@@ -11,7 +11,7 @@ const getTokens = async (userId: number) => {
     expiresAt: new Date(Date.now() + config.JWT_REFRESH_EXPIRE_MS)
   });
 
-  const accessToken = sign({ userId }, config.JWT_ACCESS_SECRET_KEY, {
+  const accessToken = sign({ userId, sessionId: session.id }, config.JWT_ACCESS_SECRET_KEY, {
     expiresIn: `${config.JWT_ACCESS_EXPIRE_MS}ms`
   });
   const refreshToken = sign({ userId, sessionId: session.id }, config.JWT_REFRESH_SECRET_KEY, {
@@ -48,4 +48,8 @@ export const loginUser = async (name: string, password: string) => {
     return null;
   }
   return getTokens(user.id);
+}
+
+export const isSessionExist = async (sessionId: number) => {
+  return !!(await dataSource.getRepository(Session).findOneBy({ id: sessionId }));
 }

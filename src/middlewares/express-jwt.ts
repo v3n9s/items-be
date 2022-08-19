@@ -1,6 +1,14 @@
 import { ErrorRequestHandler } from 'express';
-import { expressjwt, UnauthorizedError } from 'express-jwt';
+import { expressjwt, UnauthorizedError, IsRevoked } from 'express-jwt';
 import config from '../config';
+import { isSessionExist } from '../services/auth';
+
+const isRevoked: IsRevoked = async (req, token) => {
+  if (!token || typeof token.payload === 'string') {
+    return false;
+  }
+  return !(await isSessionExist(token?.payload.sessionId));
+}
 
 export const customExpressJwt = (
   options?: Partial<Parameters<typeof expressjwt>['0']>
@@ -8,6 +16,7 @@ export const customExpressJwt = (
   return expressjwt({
     algorithms: ['HS256'],
     secret: config.JWT_ACCESS_SECRET_KEY,
+    isRevoked,
     ...options
   });
 }
