@@ -40,8 +40,8 @@ authRouter.post('/refresh', customValidate({
   secret: config.JWT_REFRESH_SECRET_KEY,
   getToken: (req) => req.body.refreshToken
 }), async (req: Request, res) => {
-  if (req.auth && req.auth.userId && req.auth.tokenId) {
-    const tokens = await refreshUserTokens(req.auth.userId, req.auth.tokenId);
+  if (req.auth && req.auth.userId && req.auth.sessionId) {
+    const tokens = await refreshUserTokens(req.auth.userId, req.auth.sessionId);
     if (tokens) {
       res.status(201).json(tokens);
     } else {

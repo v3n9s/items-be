@@ -14,22 +14,22 @@ const getTokens = async (userId: number) => {
   const accessToken = sign({ userId }, config.JWT_ACCESS_SECRET_KEY, {
     expiresIn: `${config.JWT_ACCESS_EXPIRE_MS}ms`
   });
-  const refreshToken = sign({ userId, tokenId: session.id }, config.JWT_REFRESH_SECRET_KEY, {
+  const refreshToken = sign({ userId, sessionId: session.id }, config.JWT_REFRESH_SECRET_KEY, {
     expiresIn: `${config.JWT_REFRESH_EXPIRE_MS}ms`
   });
 
   return { accessToken, refreshToken };
 }
 
-export const refreshUserTokens = async (userId: number, tokenId: number) => {
+export const refreshUserTokens = async (userId: number, sessionId: number) => {
   const session = await dataSource.getRepository(Session).findOneBy({
-    id: tokenId,
+    id: sessionId,
     user: {
       id: userId
     }
   });
   if (session) {
-    dataSource.getRepository(Session).delete({ id: tokenId });
+    dataSource.getRepository(Session).delete({ id: sessionId });
   }
   return session && session.expiresAt > new Date() ? getTokens(userId) : null;
 }
