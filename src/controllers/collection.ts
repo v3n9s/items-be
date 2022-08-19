@@ -71,7 +71,7 @@ collectionRouter.patch(
   }),
   canActivate(
     async (req) => await isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)
-      || !await isCollectionExists(+req.params.id!)
+      || !(await isCollectionExists(+req.params.id!))
   ),
   async (req, res) => {
     const collection = await updateCollection({ id: +req.params.id!, ...req.body });
@@ -92,7 +92,7 @@ collectionRouter.delete(
   }),
   canActivate(
     async (req) => await isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)
-      || !await isCollectionExists(+req.params.id!)
+      || !(await isCollectionExists(+req.params.id!))
   ),
   async (req, res) => {
     res.status(await deleteCollection(+req.params.id!) ? 200 : 404).send();

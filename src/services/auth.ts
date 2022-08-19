@@ -44,7 +44,7 @@ export const registerUser = async (name: string, password: string) => {
 
 export const loginUser = async (name: string, password: string) => {
   const user = await dataSource.getRepository(User).findOneBy({ name });
-  if (!user || !await compare(password, user.password)) {
+  if (!user || !(await compare(password, user.password))) {
     return null;
   }
   return getTokens(user.id);

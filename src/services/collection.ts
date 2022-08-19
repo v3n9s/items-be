@@ -15,7 +15,7 @@ export const getCollection = (id: number) => {
 export const createCollection = async (
   { userId, ...collection}: Pick<Collection, 'name' | 'description'> & { userId: number }
 ) => {
-  if (!await dataSource.getRepository(User).findOneBy({ id: userId })) {
+  if (!(await dataSource.getRepository(User).findOneBy({ id: userId }))) {
     return null;
   }
   return dataSource.getRepository(Collection).save({
@@ -27,7 +27,7 @@ export const createCollection = async (
 export const deleteCollection = async (id: number) => {
   const collection = await getCollection(id);
   return collection
-    ? !!await dataSource.getRepository(Collection).remove(collection)
+    ? !!(await dataSource.getRepository(Collection).remove(collection))
     : null;
 }
 
@@ -40,14 +40,14 @@ export const updateCollection = async (
 }
 
 export const isCollectionBelongsToUser = async (collectionId: number, userId: number) => {
-  return !!await dataSource.getRepository(Collection).findOneBy({
+  return !!(await dataSource.getRepository(Collection).findOneBy({
     id: collectionId,
     user: {
       id: userId
     }
-  });
+  }));
 }
 
 export const isCollectionExists = async (id: number) => {
-  return !!await dataSource.getRepository(Collection).findOneBy({ id });
+  return !!(await dataSource.getRepository(Collection).findOneBy({ id }));
 }
