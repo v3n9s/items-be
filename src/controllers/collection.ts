@@ -2,6 +2,7 @@ import express from 'express';
 import { Joi } from 'express-validation';
 import canActivate from '../middlewares/can-activate';
 import { customExpressJwt } from '../middlewares/express-jwt';
+import { handleEntityNotExist } from '../middlewares/handle-entity-not-exist';
 import { customValidate } from '../middlewares/validation';
 import {
   isCollectionBelongsToUser,
@@ -9,32 +10,34 @@ import {
   deleteCollection,
   getCollection,
   getCollections,
-  isCollectionExists,
   updateCollection
 } from '../services/collection';
+import { getUser } from '../services/user';
 
 const collectionRouter = express.Router();
 
-collectionRouter.get('/', customValidate({
-  query: Joi.object({
-    userId: Joi.number().integer()
-  })
-}), async (req, res) => {
-  const collections = await getCollections(+req.query.userId!);
-  res.status(200).json(collections);
+collectionRouter.get(
+  '/',
+  customValidate({
+    query: Joi.object({
+      userId: Joi.number().integer()
+    })
+  }), async (req, res) => {
+    const collections = await getCollections(+req.query.userId!);
+    res.status(200).json(collections);
 });
 
-collectionRouter.get('/:id', customValidate({
-  params: Joi.object({
-    id: Joi.number().integer()
-  })
-}), async (req, res) => {
-  const collection = await getCollection(+req.params.id!);
-  if (collection) {
+collectionRouter.get(
+  '/:id',
+  customValidate({
+    params: Joi.object({
+      id: Joi.number().integer()
+    })
+  }),
+  handleEntityNotExist((req) => getCollection(+req.params.id!)),
+  async (req, res) => {
+    const collection = (await getCollection(+req.params.id!))!;
     res.status(200).json(collection);
-  } else {
-    res.status(404).send();
-  }
 });
 
 collectionRouter.post(
@@ -47,14 +50,11 @@ collectionRouter.post(
       userId: Joi.number().integer()
     })
   }),
+  handleEntityNotExist((req) => getUser(req.body.userId)),
   canActivate((req) => req.body.userId === req.auth?.userId),
   async (req, res) => {
-    const collection = await createCollection(req.body);
-    if (collection) {
-      res.status(201).json(collection);
-    } else {
-      res.status(404).send(`There is no user with id ${req.body.userId}`);
-    }
+    const collection = (await createCollection(req.body))!;
+    res.status(201).json(collection);
 });
 
 collectionRouter.patch(
@@ -69,17 +69,11 @@ collectionRouter.patch(
       id: Joi.number().integer()
     })
   }),
-  canActivate(
-    async (req) => await isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)
-      || !(await isCollectionExists(+req.params.id!))
-  ),
+  handleEntityNotExist((req) => getCollection(+req.params.id!)),
+  canActivate((req) => isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)),
   async (req, res) => {
-    const collection = await updateCollection({ id: +req.params.id!, ...req.body });
-    if (collection) {
-      res.status(200).json(collection);
-    } else {
-      res.status(404).send();
-    }
+    const collection = (await updateCollection({ id: +req.params.id!, ...req.body }))!;
+    res.status(200).json(collection);
 });
 
 collectionRouter.delete(
@@ -90,12 +84,11 @@ collectionRouter.delete(
       id: Joi.number().integer()
     })
   }),
-  canActivate(
-    async (req) => await isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)
-      || !(await isCollectionExists(+req.params.id!))
-  ),
+  handleEntityNotExist((req) => getCollection(+req.params.id!)),
+  canActivate((req) => isCollectionBelongsToUser(+req.params.id!, req.auth!.userId)),
   async (req, res) => {
-    res.status(await deleteCollection(+req.params.id!) ? 200 : 404).send();
+    await deleteCollection(+req.params.id!)
+    res.status(200).send();
 });
 
 export default collectionRouter;

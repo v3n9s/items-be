@@ -34,7 +34,7 @@ export const deleteCollection = async (id: number) => {
 export const updateCollection = async (
   collection: Partial<Pick<Collection, 'name' | 'description'>> & Pick<Collection, 'id'>
 ) => {
-  return (await isCollectionExists(collection.id))
+  return (await getCollection(collection.id))
     ? dataSource.getRepository(Collection).save(collection)
     : null;
 }
@@ -46,8 +46,4 @@ export const isCollectionBelongsToUser = async (collectionId: number, userId: nu
       id: userId
     }
   }));
-}
-
-export const isCollectionExists = async (id: number) => {
-  return !!(await dataSource.getRepository(Collection).findOneBy({ id }));
 }
