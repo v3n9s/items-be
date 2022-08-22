@@ -1,6 +1,7 @@
 import express from 'express';
 import authRouter from './controllers/auth';
 import collectionRouter from './controllers/collection';
+import commentRouter from './controllers/comment';
 import itemRouter from './controllers/item';
 import userRouter from './controllers/user';
 import errorHandler from './middlewares/error-handler';
@@ -15,6 +16,7 @@ app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/collections', collectionRouter);
 app.use('/items', itemRouter);
+app.use('/comments', commentRouter);
 app.use(validationErrorHandler);
 app.use(unauthorizedErrorHandler);
 app.use(notFoundHandler);
