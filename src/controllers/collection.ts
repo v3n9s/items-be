@@ -1,4 +1,5 @@
 import express from 'express';
+import { Request } from 'express-jwt';
 import { Joi } from 'express-validation';
 import canActivate from '../middlewares/can-activate';
 import { customExpressJwt } from '../middlewares/express-jwt';
@@ -12,7 +13,6 @@ import {
   getCollections,
   updateCollection
 } from '../services/collection';
-import { getUser } from '../services/user';
 
 const collectionRouter = express.Router();
 
@@ -46,14 +46,15 @@ collectionRouter.post(
   customValidate({
     body: Joi.object({
       name: Joi.string(),
-      description: Joi.string(),
-      userId: Joi.number().integer()
+      description: Joi.string()
     })
   }),
-  handleEntityNotExist((req) => getUser(req.body.userId)),
-  canActivate((req) => req.body.userId === req.auth?.userId),
-  async (req, res) => {
-    const collection = (await createCollection(req.body))!;
+  async (req: Request, res) => {
+    const collection = (await createCollection({
+      name: req.body.name,
+      description: req.body.description,
+      userId: req.auth?.userId
+    }))!;
     res.status(201).json(collection);
 });
 
