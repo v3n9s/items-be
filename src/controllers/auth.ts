@@ -5,6 +5,8 @@ import config from '../config';
 import { customValidate } from '../middlewares/validation';
 import { customExpressJwt } from '../middlewares/express-jwt';
 import { loginUser, refreshUserTokens, registerUser } from '../services/auth';
+import { handleEntityNotExist } from '../middlewares/handle-entity-not-exist';
+import { getSafeUser, getUser } from '../services/user';
 
 const authRouter = express.Router();
 
@@ -51,5 +53,14 @@ authRouter.post('/refresh', customValidate({
     res.status(400).send();
   }
 });
+
+authRouter.get(
+  '/user',
+  customExpressJwt(),
+  handleEntityNotExist((req: Request) => getUser(req.auth?.userId)),
+  async (req: Request, res) => {
+    res.status(200).json(await getSafeUser({ id: req.auth?.userId})!);
+  }
+);
 
 export default authRouter;

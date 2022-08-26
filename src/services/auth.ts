@@ -4,6 +4,7 @@ import config from '../config';
 import dataSource from '../data-source';
 import { Session } from '../entities/session';
 import { User } from '../entities/user';
+import { getSafeUser } from './user';
 
 const getTokens = async (userId: number) => {
   const session = await dataSource.getRepository(Session).save({
@@ -47,7 +48,12 @@ export const loginUser = async (name: string, password: string) => {
   if (!user || !(await compare(password, user.password))) {
     return null;
   }
-  return getTokens(user.id);
+  const tokens = await getTokens(user.id);
+  const safeUser = (await getSafeUser({ name }))!;
+  return {
+    user: safeUser,
+    ...tokens
+  };
 }
 
 export const isSessionExist = async (sessionId: number) => {
