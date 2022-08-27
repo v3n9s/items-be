@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import authRouter from './controllers/auth';
 import collectionRouter from './controllers/collection';
 import commentRouter from './controllers/comment';
@@ -12,6 +13,7 @@ import { validationErrorHandler } from './middlewares/validation';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
