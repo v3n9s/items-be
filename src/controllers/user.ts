@@ -17,9 +17,9 @@ userRouter.get(
       id: Joi.number().integer()
     })
   }),
-  handleEntityNotExist((req) => getUser(+req.params.id!)),
+  handleEntityNotExist((req) => getUser({ id: +req.params.id! })),
   async (req, res) => {
-    const { password, ...safeUser } = (await getUser(+req.params.id!))!;
+    const { password, ...safeUser } = (await getUser({ id: +req.params.id! }))!;
     res.status(200).json(safeUser);
 });
 
