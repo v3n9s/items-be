@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "webpack --env ISDEV",
     "build": "webpack",
+    "start": "node ./dist",
     "typeorm": "typeorm-ts-node-esm -d ./src/data-source"
   },
   "dependencies": {
