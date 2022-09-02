@@ -11,5 +11,8 @@ import { User } from './entities/user';
 export default new DataSource({
   type: 'postgres',
   url: config.DATABASE_URL,
-  entities: [User, Session, Comment, Collection, Item, Like, Tag]
+  entities: [User, Session, Comment, Collection, Item, Like, Tag],
+  ssl: config.IS_HEROKU && {
+    rejectUnauthorized: false
+  }
 });

@@ -10,6 +10,7 @@ interface Config {
   JWT_REFRESH_SECRET_KEY: string;
   JWT_REFRESH_EXPIRE_DAYS: number;
   JWT_REFRESH_EXPIRE_MS: number;
+  IS_HEROKU: boolean;
 }
 
 const schema = Joi.object<Readonly<Config>>({
@@ -20,7 +21,8 @@ const schema = Joi.object<Readonly<Config>>({
   JWT_ACCESS_EXPIRE_MS: Joi.number(),
   JWT_REFRESH_SECRET_KEY: Joi.string(),
   JWT_REFRESH_EXPIRE_DAYS: Joi.number(),
-  JWT_REFRESH_EXPIRE_MS: Joi.number()
+  JWT_REFRESH_EXPIRE_MS: Joi.number(),
+  IS_HEROKU: Joi.boolean()
 });
 
 const config = schema.validate({
@@ -35,7 +37,8 @@ const config = schema.validate({
   JWT_REFRESH_EXPIRE_DAYS: process.env.JWT_REFRESH_EXPIRE_DAYS,
   get JWT_REFRESH_EXPIRE_MS() {
     return this.JWT_REFRESH_EXPIRE_DAYS * 24 * 60 * 60 * 1000;
-  }
+  },
+  IS_HEROKU: process.env.IS_HEROKU
 } as {[key in keyof Config]: any}, {
   abortEarly: false,
   presence: 'required'
