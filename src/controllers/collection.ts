@@ -63,8 +63,8 @@ collectionRouter.patch(
   customExpressJwt(),
   customValidate({
     body: Joi.object({
-      name: Joi.string(),
-      description: Joi.string()
+      name: Joi.string().optional(),
+      description: Joi.string().optional()
     }),
     params: Joi.object({
       id: Joi.number().integer()
