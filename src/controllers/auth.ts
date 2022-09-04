@@ -4,7 +4,7 @@ import { Joi } from 'express-validation';
 import config from '../config';
 import { customValidate } from '../middlewares/validation';
 import { customExpressJwt } from '../middlewares/express-jwt';
-import { loginUser, refreshUserTokens, registerUser } from '../services/auth';
+import { deleteSession, loginUser, refreshUserTokens, registerUser } from '../services/auth';
 import { handleEntityNotExist } from '../middlewares/handle-entity-not-exist';
 import { getUser } from '../services/user';
 
@@ -53,6 +53,15 @@ authRouter.post('/refresh', customValidate({
     res.status(400).send();
   }
 });
+
+authRouter.delete(
+  '/logout',
+  customExpressJwt(),
+  async (req: Request, res) => {
+    const isDeleted = await deleteSession(req.auth?.sessionId);
+    res.status(isDeleted ? 200 : 404).send();
+  }
+);
 
 authRouter.get(
   '/user',
